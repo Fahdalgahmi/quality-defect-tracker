@@ -26,7 +26,14 @@
     <tbody id="defectTable"></tbody>
 </table>
 
-<h2>Add New Defect</h2>
+<h2>Dashboard</h2>
+
+<div>
+    <h3>Total Defects: <span id="totalDefects">0</span></h3>
+</div>
+<h3>Critical Defects: <span id="criticalDefects">0</span></h3>
+
+<h3>Open Defects: <span id="openDefects">0</span></h3>
 
 <form id="defectForm">
     <input type="date" id="defect_date" required>
@@ -39,10 +46,27 @@
     <button type="submit">Add Defect</button>
 </form>
 
+
 <script>
 async function loadDefects() {
     const response = await fetch("http://127.0.0.1:8000/defects");
     const data = await response.json();
+
+    document.getElementById("totalDefects").textContent = data.length;
+
+    const openDefects = data.filter(
+    d => d.status === "Open"
+).length;
+
+  const criticalDefects = data.filter(
+    d => d.severity === "Critical"
+).length;
+
+document.getElementById("criticalDefects").textContent =
+    criticalDefects;
+
+document.getElementById("openDefects").textContent =
+    openDefects;
 
     console.log(data);
 
@@ -93,8 +117,11 @@ document.getElementById("defectForm").addEventListener("submit", async function(
 
     document.getElementById("defectForm").reset();
     loadDefects();
+
+  
 });
 
+loadDefects();
 
 </script>
 
