@@ -310,7 +310,13 @@ async function loadDefects() {
                 <td>${defect.defect_type}</td>
                 <td>${defect.quantity}</td>
                 <td>${defect.severity}</td>
-                <td>${defect.status}</td>
+                <td>
+                    <select onchange="updateStatus(${defect.defect_id}, this.value)">
+                     <option value="Open" ${defect.status === "Open" ? "selected" : ""}>Open</option>
+                     <option value="In Progress" ${defect.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                     <option value="Closed" ${defect.status === "Closed" ? "selected" : ""}>Closed</option>
+                    </select>
+                </td>
             </tr>
         `;
     });
@@ -368,6 +374,22 @@ document.getElementById("defectForm")
 
     loadDefects();
 });
+
+async function updateStatus(defectId, newStatus) {
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/defects/${defectId}/status?status=${newStatus}`,
+        {
+            method: "PUT"
+        }
+    );
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    loadDefects();
+}
 
 loadDefects();
 

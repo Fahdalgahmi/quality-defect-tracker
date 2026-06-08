@@ -131,3 +131,31 @@ def get_defects():
 
     except Exception as e:
         return {"error": str(e)}
+    
+
+@app.put("/defects/{defect_id}/status")
+def update_defect_status(defect_id: int, status: str):
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            UPDATE defects
+            SET status = %s
+            WHERE defect_id = %s
+            RETURNING defect_id;
+        """, (status, defect_id))
+
+        updated = cur.fetchone()
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        if updated:
+            return {"message": "Status updated successfully"}
+        else:
+            return {"error": "Defect not found"}
+
+    except Exception as e:
+        return {"error": str(e)}
