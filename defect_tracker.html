@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quality Defect Tracker</title>
+</head>
+<body>
+
+<h1>Quality Defect Tracker</h1>
+
+<button onclick="loadDefects()">Load Defects</button>
+
+<table border="1" cellpadding="8" style="margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Shift</th>
+            <th>Part</th>
+            <th>Machine</th>
+            <th>Defect</th>
+            <th>Qty</th>
+            <th>Severity</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="defectTable"></tbody>
+</table>
+
+<script>
+async function loadDefects() {
+    const response = await fetch("http://127.0.0.1:8000/defects");
+    const data = await response.json();
+
+    console.log(data);
+
+    const table = document.getElementById("defectTable");
+    table.innerHTML = "";
+
+    data.forEach(defect => {
+        table.innerHTML += `
+            <tr>
+                <td>${defect.defect_id}</td>
+                <td>${defect.defect_date}</td>
+                <td>${defect.shift}</td>
+                <td>${defect.part_number}</td>
+                <td>${defect.machine}</td>
+                <td>${defect.defect_type}</td>
+                <td>${defect.quantity}</td>
+                <td>${defect.severity}</td>
+                <td>${defect.status}</td>
+            </tr>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
