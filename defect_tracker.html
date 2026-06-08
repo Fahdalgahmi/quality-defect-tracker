@@ -212,6 +212,10 @@ label {
 <div class="filter-box">
     <button onclick="loadDefects()">Load Defects</button>
 
+    <input type="text" id="partSearch" placeholder="Search Part Number" oninput="loadDefects()">
+
+<button onclick="exportCSV()">Export CSV</button>
+
     <label>Filter Severity:</label>
 
     <select id="severityFilter" onchange="loadDefects()">
@@ -293,6 +297,24 @@ label {
 
 let severityChart;
 
+async function exportCSV() {
+    const response = await fetch("http://127.0.0.1:8000/defects");
+    const data = await response.json();
+
+    let csv = "ID,Date,Shift,Part Number,Machine,Defect Type,Quantity,Severity,Status\n";
+
+    data.forEach(defect => {
+        csv += `${defect.defect_id},${defect.defect_date},${defect.shift},${defect.part_number},${defect.machine},${defect.defect_type},${defect.quantity},${defect.severity},${defect.status}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "quality_defects.csv";
+    link.click();
+}
+
 async function loadDefects() {
 
     const response = await fetch("http://127.0.0.1:8000/defects");
@@ -303,6 +325,12 @@ async function loadDefects() {
 
     document.getElementById("totalDefects").textContent =
         data.length;
+
+
+    const searchPart =
+    document.getElementById("partSearch").value.toLowerCase();
+
+
 
     const openDefects =
         data.filter(d => d.status === "Open").length;
@@ -321,12 +349,17 @@ async function loadDefects() {
 
     table.innerHTML = "";
 
-    const filteredData =
-        selectedSeverity === "All"
-            ? data
-            : data.filter(
-                d => d.severity === selectedSeverity
-            );
+    const filteredData = data.filter(defect => {
+    const matchesSeverity =
+        selectedSeverity === "All" ||
+        defect.severity === selectedSeverity;
+
+    const matchesPart =
+        defect.part_number.toLowerCase().includes(searchPart);
+
+    return matchesSeverity && matchesPart;
+});
+
 
     const severityCounts = {};
 
