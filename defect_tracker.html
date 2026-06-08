@@ -2,32 +2,236 @@
 <html>
 <head>
     <title>Quality Defect Tracker</title>
+
+    
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.25), transparent 35%),
+        linear-gradient(135deg, #0f172a, #1e293b);
+    margin: 0;
+    padding: 35px;
+    color: #111827;
+    min-height: 100vh;
+}
+
+h1 {
+    background: linear-gradient(135deg, #111827, #2563eb);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    letter-spacing: 1px;
+}
+
+h2 {
+    color: white;
+    margin-top: 30px;
+}
+
+.filter-box,
+form,
+table,
+.card {
+    backdrop-filter: blur(12px);
+}
+
+.filter-box {
+    background: rgba(255,255,255,0.95);
+    padding: 18px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard {
+    display: flex;
+    gap: 22px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: rgba(255,255,255,0.96);
+    padding: 24px;
+    border-radius: 20px;
+    min-width: 220px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    border-top: 5px solid #3b82f6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.card h3 {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card h2 {
+    margin: 10px 0 0;
+    font-size: 38px;
+    color: #0f172a;
+}
+
+button {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(37,99,235,0.45);
+}
+
+input,
+select {
+    padding: 12px;
+    margin: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #f8fafc;
+}
+
+input:focus,
+select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+}
+
+form {
+    background: rgba(255,255,255,0.96);
+    padding: 22px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.98);
+    margin-top: 25px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    border: none;
+}
+
+th {
+    background: linear-gradient(135deg, #111827, #1e40af);
+    color: white;
+    padding: 16px;
+    text-align: left;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tr:hover {
+    background: #eff6ff;
+}
+
+label {
+    font-weight: 700;
+    color: #334155;
+}
+
+@media (max-width: 800px) {
+    body {
+        padding: 18px;
+    }
+
+    .filter-box,
+    .dashboard {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    input,
+    select,
+    button {
+        width: 100%;
+    }
+}
+</style>
+    
+
 </head>
+
 <body>
 
 <h1>Quality Defect Tracker</h1>
 
-<button onclick="loadDefects()">Load Defects</button>
 
-<label>Filter Severity:</label>
+<div class="filter-box">
+    <button onclick="loadDefects()">Load Defects</button>
 
-<select id="severityFilter" onchange="loadDefects()">
-    <option value="All">All</option>
-    <option value="Critical">Critical</option>
-    <option value="High">High</option>
-    <option value="Medium">Medium</option>
-    <option value="Low">Low</option>
-</select>
+    <label>Filter Severity:</label>
+
+    <select id="severityFilter" onchange="loadDefects()">
+        <option value="All">All</option>
+        <option value="Critical">Critical</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+    </select>
+</div>
 
 <h2>Dashboard</h2>
 
-<div>
-    <h3>Total Defects: <span id="totalDefects">0</span></h3>
-    <h3>Open Defects: <span id="openDefects">0</span></h3>
-    <h3>Critical Defects: <span id="criticalDefects">0</span></h3>
+<div class="dashboard">
+
+    <div class="card">
+        <h3>Total Defects</h3>
+        <h2 id="totalDefects">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Open Defects</h3>
+        <h2 id="openDefects">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Critical Defects</h3>
+        <h2 id="criticalDefects">0</h2>
+    </div>
+
 </div>
 
-<table border="1" cellpadding="8" style="margin-top:20px;">
+<table>
     <thead>
         <tr>
             <th>ID</th>
