@@ -9,7 +9,25 @@
 
 <button onclick="loadDefects()">Load Defects</button>
 
-<table border="1" cellpadding="8" style="margin-top: 20px;">
+<label>Filter Severity:</label>
+
+<select id="severityFilter" onchange="loadDefects()">
+    <option value="All">All</option>
+    <option value="Critical">Critical</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+</select>
+
+<h2>Dashboard</h2>
+
+<div>
+    <h3>Total Defects: <span id="totalDefects">0</span></h3>
+    <h3>Open Defects: <span id="openDefects">0</span></h3>
+    <h3>Critical Defects: <span id="criticalDefects">0</span></h3>
+</div>
+
+<table border="1" cellpadding="8" style="margin-top:20px;">
     <thead>
         <tr>
             <th>ID</th>
@@ -26,14 +44,7 @@
     <tbody id="defectTable"></tbody>
 </table>
 
-<h2>Dashboard</h2>
-
-<div>
-    <h3>Total Defects: <span id="totalDefects">0</span></h3>
-</div>
-<h3>Critical Defects: <span id="criticalDefects">0</span></h3>
-
-<h3>Open Defects: <span id="openDefects">0</span></h3>
+<h2>Add New Defect</h2>
 
 <form id="defectForm">
     <input type="date" id="defect_date" required>
@@ -46,34 +57,45 @@
     <button type="submit">Add Defect</button>
 </form>
 
-
 <script>
+
 async function loadDefects() {
+
     const response = await fetch("http://127.0.0.1:8000/defects");
     const data = await response.json();
 
-    document.getElementById("totalDefects").textContent = data.length;
+    const selectedSeverity =
+        document.getElementById("severityFilter").value;
 
-    const openDefects = data.filter(
-    d => d.status === "Open"
-).length;
+    document.getElementById("totalDefects").textContent =
+        data.length;
 
-  const criticalDefects = data.filter(
-    d => d.severity === "Critical"
-).length;
+    const openDefects =
+        data.filter(d => d.status === "Open").length;
 
-document.getElementById("criticalDefects").textContent =
-    criticalDefects;
+    document.getElementById("openDefects").textContent =
+        openDefects;
 
-document.getElementById("openDefects").textContent =
-    openDefects;
+    const criticalDefects =
+        data.filter(d => d.severity === "Critical").length;
 
-    console.log(data);
+    document.getElementById("criticalDefects").textContent =
+        criticalDefects;
 
-    const table = document.getElementById("defectTable");
+    const table =
+        document.getElementById("defectTable");
+
     table.innerHTML = "";
 
-    data.forEach(defect => {
+    const filteredData =
+        selectedSeverity === "All"
+            ? data
+            : data.filter(
+                d => d.severity === selectedSeverity
+            );
+
+    filteredData.forEach(defect => {
+
         table.innerHTML += `
             <tr>
                 <td>${defect.defect_id}</td>
@@ -90,35 +112,57 @@ document.getElementById("openDefects").textContent =
     });
 }
 
-document.getElementById("defectForm").addEventListener("submit", async function(event) {
+document.getElementById("defectForm")
+.addEventListener("submit", async function(event) {
+
     event.preventDefault();
 
     const defect = {
-        defect_date: document.getElementById("defect_date").value,
-        shift: document.getElementById("shift").value,
-        part_number: document.getElementById("part_number").value,
-        machine: document.getElementById("machine").value,
-        defect_type: document.getElementById("defect_type").value,
-        quantity: parseInt(document.getElementById("quantity").value),
-        severity: document.getElementById("severity").value,
+
+        defect_date:
+            document.getElementById("defect_date").value,
+
+        shift:
+            document.getElementById("shift").value,
+
+        part_number:
+            document.getElementById("part_number").value,
+
+        machine:
+            document.getElementById("machine").value,
+
+        defect_type:
+            document.getElementById("defect_type").value,
+
+        quantity:
+            parseInt(
+                document.getElementById("quantity").value
+            ),
+
+        severity:
+            document.getElementById("severity").value,
+
         status: "Open"
     };
 
-    const response = await fetch("http://127.0.0.1:8000/defects", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(defect)
-    });
+    const response = await fetch(
+        "http://127.0.0.1:8000/defects",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(defect)
+        }
+    );
 
     const result = await response.json();
+
     alert(result.message);
 
     document.getElementById("defectForm").reset();
-    loadDefects();
 
-  
+    loadDefects();
 });
 
 loadDefects();
