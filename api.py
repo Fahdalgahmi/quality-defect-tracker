@@ -159,3 +159,30 @@ def update_defect_status(defect_id: int, status: str):
 
     except Exception as e:
         return {"error": str(e)}
+    
+
+@app.delete("/defects/{defect_id}")
+def delete_defect(defect_id: int):
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            DELETE FROM defects
+            WHERE defect_id = %s
+            RETURNING defect_id;
+        """, (defect_id,))
+
+        deleted = cur.fetchone()
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        if deleted:
+            return {"message": "Defect deleted successfully"}
+        else:
+            return {"error": "Defect not found"}
+
+    except Exception as e:
+        return {"error": str(e)}

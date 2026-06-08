@@ -243,6 +243,7 @@ label {
             <th>Qty</th>
             <th>Severity</th>
             <th>Status</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody id="defectTable"></tbody>
@@ -300,26 +301,35 @@ async function loadDefects() {
 
     filteredData.forEach(defect => {
 
-        table.innerHTML += `
-            <tr>
-                <td>${defect.defect_id}</td>
-                <td>${defect.defect_date}</td>
-                <td>${defect.shift}</td>
-                <td>${defect.part_number}</td>
-                <td>${defect.machine}</td>
-                <td>${defect.defect_type}</td>
-                <td>${defect.quantity}</td>
-                <td>${defect.severity}</td>
-                <td>
-                    <select onchange="updateStatus(${defect.defect_id}, this.value)">
-                     <option value="Open" ${defect.status === "Open" ? "selected" : ""}>Open</option>
-                     <option value="In Progress" ${defect.status === "In Progress" ? "selected" : ""}>In Progress</option>
-                     <option value="Closed" ${defect.status === "Closed" ? "selected" : ""}>Closed</option>
-                    </select>
-                </td>
-            </tr>
-        `;
-    });
+    table.innerHTML += `
+        <tr>
+            <td>${defect.defect_id}</td>
+            <td>${defect.defect_date}</td>
+            <td>${defect.shift}</td>
+            <td>${defect.part_number}</td>
+            <td>${defect.machine}</td>
+            <td>${defect.defect_type}</td>
+            <td>${defect.quantity}</td>
+            <td>${defect.severity}</td>
+
+            <td>
+                <select onchange="updateStatus(${defect.defect_id}, this.value)">
+                    <option value="Open" ${defect.status === "Open" ? "selected" : ""}>Open</option>
+                    <option value="In Progress" ${defect.status === "In Progress" ? "selected" : ""}>In Progress</option>
+                    <option value="Closed" ${defect.status === "Closed" ? "selected" : ""}>Closed</option>
+                </select>
+            </td>
+
+            <td>
+                <button onclick="deleteDefect(${defect.defect_id})">
+                    Delete
+                </button>
+            </td>
+
+        </tr>
+    `;
+});
+
 }
 
 document.getElementById("defectForm")
@@ -381,6 +391,25 @@ async function updateStatus(defectId, newStatus) {
         `http://127.0.0.1:8000/defects/${defectId}/status?status=${newStatus}`,
         {
             method: "PUT"
+        }
+    );
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    loadDefects();
+}
+async function deleteDefect(defectId) {
+
+    if (!confirm("Delete this defect?")) {
+        return;
+    }
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/defects/${defectId}`,
+        {
+            method: "DELETE"
         }
     );
 
