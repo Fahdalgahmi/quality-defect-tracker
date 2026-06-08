@@ -26,6 +26,19 @@
     <tbody id="defectTable"></tbody>
 </table>
 
+<h2>Add New Defect</h2>
+
+<form id="defectForm">
+    <input type="date" id="defect_date" required>
+    <input type="text" id="shift" placeholder="Shift" required>
+    <input type="text" id="part_number" placeholder="Part Number" required>
+    <input type="text" id="machine" placeholder="Machine">
+    <input type="text" id="defect_type" placeholder="Defect Type" required>
+    <input type="number" id="quantity" placeholder="Quantity" required>
+    <input type="text" id="severity" placeholder="Severity">
+    <button type="submit">Add Defect</button>
+</form>
+
 <script>
 async function loadDefects() {
     const response = await fetch("http://127.0.0.1:8000/defects");
@@ -52,6 +65,37 @@ async function loadDefects() {
         `;
     });
 }
+
+document.getElementById("defectForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const defect = {
+        defect_date: document.getElementById("defect_date").value,
+        shift: document.getElementById("shift").value,
+        part_number: document.getElementById("part_number").value,
+        machine: document.getElementById("machine").value,
+        defect_type: document.getElementById("defect_type").value,
+        quantity: parseInt(document.getElementById("quantity").value),
+        severity: document.getElementById("severity").value,
+        status: "Open"
+    };
+
+    const response = await fetch("http://127.0.0.1:8000/defects", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(defect)
+    });
+
+    const result = await response.json();
+    alert(result.message);
+
+    document.getElementById("defectForm").reset();
+    loadDefects();
+});
+
+
 </script>
 
 </body>
