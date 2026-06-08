@@ -378,7 +378,6 @@ document.getElementById("defectForm")
 
     const result = await response.json();
 
-    alert(result.message);
 
     document.getElementById("defectForm").reset();
 
@@ -396,7 +395,6 @@ async function updateStatus(defectId, newStatus) {
 
     const result = await response.json();
 
-    alert(result.message);
 
     loadDefects();
 }
@@ -415,7 +413,6 @@ async function deleteDefect(defectId) {
 
     const result = await response.json();
 
-    alert(result.message);
 
     loadDefects();
 }
